@@ -524,9 +524,32 @@ struct Mtxs {
         rhs.k = 0;
         rhs.mtxs = nullptr;
     }
-    Mtxs& operator=(Mtxs);
 
-    ~Mtxs() = default;
+    Mtxs& operator=(const Mtxs& rhs) {
+        if (this == &rhs) {
+            return *this;
+        }
+        Mtxs temp(rhs);
+        std::swap(k, temp.k);
+        std::swap(mtxs, temp.mtxs);
+
+        return *this;
+    }
+
+    Mtxs& operator=(Mtxs&& rhs) noexcept {
+        if (this != &rhs) {
+            delete[] mtxs;
+            k = rhs.k;
+            mtxs = rhs.mtxs;
+            rhs.k = 0;
+            rhs.mtxs = nullptr;
+        }
+        return *this;
+    }
+
+    ~Mtxs() {
+        delete[] mtxs;
+    }
 };
 
 Mtx conv(Mtx m, Mtx(*f)(Mtx, Mtx)) {
